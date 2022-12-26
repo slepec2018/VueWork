@@ -1,0 +1,22 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
+tslib_1.__exportStar(require("./columns.controller"), exports);
+tslib_1.__exportStar(require("./user.controller"), exports);
+tslib_1.__exportStar(require("./statuses.controller"), exports);
+tslib_1.__exportStar(require("./comments.controller"), exports);
+tslib_1.__exportStar(require("./tasks.controller"), exports);
+tslib_1.__exportStar(require("./ticks.controller"), exports);
+tslib_1.__exportStar(require("./columns-tasks.controller"), exports);
+tslib_1.__exportStar(require("./tasks-columns.controller"), exports);
+tslib_1.__exportStar(require("./tasks-comments.controller"), exports);
+tslib_1.__exportStar(require("./comments-tasks.controller"), exports);
+tslib_1.__exportStar(require("./tasks-ticks.controller"), exports);
+tslib_1.__exportStar(require("./ticks-tasks.controller"), exports);
+tslib_1.__exportStar(require("./statuses-tasks.controller"), exports);
+tslib_1.__exportStar(require("./tasks-statuses.controller"), exports);
+tslib_1.__exportStar(require("./user-tasks.controller"), exports);
+tslib_1.__exportStar(require("./tasks-user.controller"), exports);
+tslib_1.__exportStar(require("./user-comments.controller"), exports);
+tslib_1.__exportStar(require("./comments-user.controller"), exports);
+//# sourceMappingURL=index.js.map
