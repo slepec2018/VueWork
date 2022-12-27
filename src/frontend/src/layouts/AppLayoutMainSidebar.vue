@@ -1,6 +1,13 @@
 <template>
-  <div class="backlog">
-    <button class="backlog__title">
+  <AppDrop
+    class="backlog"
+    :class="{ 'backlog--hide': backlogIsHidden }"
+    @drop="moveTask"
+  >
+    <button 
+      class="backlog__title"
+      @click="backlogIsHidden = !backlogIsHidden"
+    >
       <span>
         Бэклог
       </span>
@@ -30,90 +37,41 @@
 
           <!-- в цикле выводим список задач -->
           <div class="backlog__target-area">
-            <div
+            <TaskCard
               v-for="task in sidebarTasks"
               :key="task.id"
+              :task="task"
               class="backlog__task"
-            >
-              <div class="task">
-                <!-- если есть назначенный пользователь — выводим информацию
-                о нём -->
-                <div
-                  v-if="task.user"
-                  class="task__user"
-                >
-                  <div class="task__avatar">
-                    <!-- src и alt — динамические атрибуты.
-                    Берём значения из объекта юзера -->
-                    <img
-                      :src="task.user.avatar"
-                      :alt="task.user.name"
-                      width="20"
-                      height="20"
-                    />
-                  </div>
-                  {{ task.user.name }}
-                </div>
-
-                <!-- статусы по важности и по времени с динамическими
-                классами -->
-                <div class="task__statuses">
-                  <span
-                    v-if="task.status"
-                    class="task__status"
-                    :class="`task__status--${task.status}`"
-                  />
-                  <span
-                    v-if="task.timeStatus"
-                    class="task__status"
-                    :class="`task__status--${task.timeStatus}`"
-                  />
-                </div>
-
-                <!-- Добавляем динамический класс для заголовка задачи, если
-                в задаче не указан ответственный пользователь -->
-                <h5
-                  class="task__title"
-                  :class="{ 'task__title--first': !task.user }"
-                >
-                  {{ task.title }}
-                </h5>
-
-                <ul
-                  v-if="task.tags && task.tags.length"
-                  class="task__tags"
-                >
-                  <!-- список тегов задачи. Список статический.
-                  Поэтому можем использовать индекс в качестве ключа. -->
-                  <li
-                    v-for="(tag, index) in task.tags"
-                    :key="index"
-                  >
-                    <span class="task__tag">
-                      {{ tag }}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            />
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </AppDrop>
 </template>
 <script>
-// Список задач, из которого достанем задачи для сайдбара.
-import tasks from '@/static/tasks.json';
-// Вспомогательные функции для нормализации задач и тегов задач.
-import { normalizeTask, getTagsArrayFromString } from '@/common/helpers';
+import AppDrop from '@/common/components/AppDrop';
+import taskStatuses from '@/common/enums/taskStatuses';
+import TaskCard from '@/modules/tasks/components/TaskCard';
+import { addActive, getTargetColumnTasks } from '@/common/helpers';
+import { cloneDeep } from 'lodash';
 
 export default {
   name: 'AppLayoutMainSidebar',
+  components: { TaskCard, AppDrop },
+  props: {
+    tasks: {
+      type: Array,
+      required: true
+    },
+    filters: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      // получаем нормализованные задачи
-      tasks: tasks.map(task => normalizeTask(task)),
+      taskStatuses,
       backlogIsHidden: false
     };
   },
@@ -124,10 +82,27 @@ export default {
     sidebarTasks() {
       return this.tasks
         .filter(task => !task.columnId)
-        .map(task => ({
-          ...task,
-          tags: getTagsArrayFromString(task.tags)
-        }));
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+    }
+  },
+  methods: {
+    moveTask(active, toTask) {
+      // Note: prevent update if task is not moving
+      if (toTask && active.id === toTask.id) {
+        return;
+      }
+      const toColumnId = this.column ? this.column.id : null;
+      const targetColumnTasks = getTargetColumnTasks(toColumnId, this.tasks);
+      const activeClone = cloneDeep({ ...active, columnId: toColumnId });
+      const resultTasks = addActive(activeClone, toTask, targetColumnTasks);
+      const tasksToUpdate = [];
+      resultTasks.forEach((task, index) => {
+        if (task.sortOrder !== index || task.id === active.id) {
+          const newTask = cloneDeep({ ...task, sortOrder: index });
+          tasksToUpdate.push(newTask);
+        }
+      });
+      this.$emit('updateTasks', tasksToUpdate);
     }
   }
 };

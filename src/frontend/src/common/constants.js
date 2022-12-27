@@ -29,5 +29,6 @@ export const HOUR_IN_SEC = MINUTE_IN_SEC * 60;
 export const DAY_IN_SEC = HOUR_IN_SEC * 24;
 export const DAY_IN_MILLISEC = DAY_IN_SEC * SEC;
 
-// Разделитель тегов внутри строки тегов.
+export const MOVE = 'move';
 export const TAG_SEPARATOR = '#';
+export const DATA_TRANSFER_PAYLOAD = 'payload';
