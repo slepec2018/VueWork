@@ -1,18 +1,21 @@
 <template>
   <header class="header">
     <div class="header__logo">
-      <a class="logo">
-        <!-- @ — это алиас, как при импорте в скриптах.
-        Для доступа к src/assets/... -->
+      <router-link
+        to="/"
+        class="logo"
+      >
         <img
           src="@/assets/img/logo.svg"
           alt="VueWork logo"
           width="147"
           height="23"
         />
-      </a>
+      </router-link>
     </div>
-    <div>
+    <div
+      class="header__items"
+    >
       <form
         action="#"
         class="header__search"
@@ -32,6 +35,12 @@
           Найти
         </button>
       </form>
+      <router-link
+        to="/tasks/create"
+        class="header__create-task"
+      >
+        Создать карточку
+      </router-link>
     </div>
   </header>
 </template>
@@ -40,9 +49,18 @@
 export default {
   name: 'AppLayoutHeader',
   props: {
+    showMenu: {
+      type: Boolean,
+      default: true
+    },
     filters: {
       type: Object,
       required: true
+    }
+  },
+  methods: {
+    applyFilters(e) {
+      this.$emit('applyFilters',{ item: e.target.value, entity: 'search' });
     }
   }
 };
