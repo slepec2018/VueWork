@@ -10,6 +10,9 @@ import {
 import timeStatuses from '@/common/enums/timeStatuses';
 import taskStatuses from '@/common/enums/taskStatuses';
 
+export const capitalize = string =>
+  `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+
 // Получение тегов из строки тегов.
 export const getTagsArrayFromString = tags => {
   const array = tags.split(TAG_SEPARATOR);

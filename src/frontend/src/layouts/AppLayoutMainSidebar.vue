@@ -53,24 +53,16 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from 'vuex';
+import { moveTask } from '@/common/mixins';
 import AppDrop from '@/common/components/AppDrop';
 import TaskCard from '@/modules/tasks/components/TaskCard';
-import { moveTask } from '@/common/mixins';
+
 
 export default {
   name: 'AppLayoutMainSidebar',
   components: { TaskCard, AppDrop },
   mixins: [moveTask],
-  props: {
-    tasks: {
-      type: Array,
-      required: true
-    },
-    filters: {
-      type: Object,
-      required: true
-    }
-  },
   data() {
     return {
       backlogIsHidden: false
@@ -80,8 +72,10 @@ export default {
     // Выбираем только задачи без id колонки (у нас это именно задачи сайдбара).
     // Нормализуем список тегов.
     // Сортируем задачи по их порядку внутри колонки.
+    ...mapState('Tasks', ['tasks']),
+    ...mapGetters('Tasks', ['filteredTasks']),
     sidebarTasks() {
-      return this.tasks
+      return this.filteredTasks
         .filter(task => !task.columnId)
         .sort((a, b) => a.sortOrder - b.sortOrder);
     }
